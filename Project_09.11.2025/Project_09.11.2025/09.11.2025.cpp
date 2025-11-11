@@ -439,6 +439,50 @@ public:
 		cout << "Aveti un numar de " << this->nrIdVinuriComanda << " produse comandate." << endl;
 	}
 
+	friend ostream& operator<<(ostream& consola, const Comanda& c) {
+		consola << endl << "Id comanda: " << c.idComanda;
+		consola << endl << "Nume comanda: "
+			<< (c.numeComanda != nullptr ? c.numeComanda : "Nespecificat");
+		consola << endl << "Greutate: " << c.greutateComanda;
+		consola << endl << "Adresa livrare: " << c.adresaLivrare;
+		consola << endl << "Nr. produse: " << c.nrIdVinuriComanda;
+
+		if (c.idVinuriComanda != nullptr && c.nrIdVinuriComanda > 0) {
+			consola << endl << "Id-uri vinuri: ";
+			for (int i = 0; i < c.nrIdVinuriComanda - 1; i++) {
+				consola << c.idVinuriComanda[i] << ", ";
+			}
+			consola << c.idVinuriComanda[c.nrIdVinuriComanda - 1] << ".";
+		}
+		else {
+			consola << endl << "Id-uri vinuri nespecificate";
+		}
+
+		return consola;
+	}
+
+
+	// ++comanda (prefix)
+	Comanda operator++() {         
+		this->nrIdVinuriComanda++;
+		return *this;
+	}
+
+	// comanda++ (postfix)
+	Comanda operator++(int) {       
+		Comanda copie = *this;
+		this->nrIdVinuriComanda++;
+		return copie;
+	}
+
+	// cast la int
+	explicit operator int() const {
+		return this->idComanda;
+	}
+
+	bool operator!() const {
+		return this->nrIdVinuriComanda == 0;
+	}
 
 };
 
@@ -528,6 +572,17 @@ void main() {
 	Comanda comanda_3("Comanda se numeste asa.");
 	comanda_3.afisareComanda();
 
+	Comanda c;
+	cout << "Id comanda: " << (int)c << endl;   // foloseste operator de cast int()
 
+	if (!c) {
+		cout << "Comanda este goala.\n";
+	}
 
+	Comanda cmd2 = c++;
+	cout << "Nr produse: " << cmd2.getNrIdVinuriComanda() << endl;
+	Comanda cmd3 = ++c;    // creste din nou nrIdVinuriComanda
+	cout << "Nr produse: " << cmd3.getNrIdVinuriComanda() << endl;
+
+	cout << comanda1;
 };
