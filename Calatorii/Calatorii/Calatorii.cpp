@@ -1,4 +1,5 @@
 #include<iostream>
+#include <string>
 using namespace std;
 
 class CartelaTransport {
@@ -115,6 +116,11 @@ public:
 	//operator=
 
 void operator=(const CartelaTransport& copie) {
+
+	/*if (copie.serieCartela.length() > 0) {
+		this->serieCartela = copie.serieCartela;
+	}*/
+
 		if (copie.numePosesor.length() > 0) {
 			this->numePosesor = copie.numePosesor;
 
@@ -159,6 +165,72 @@ void operator=(const CartelaTransport& copie) {
 		cout << this->serieCartela << " - seria cartelei " << endl;
 	}
 
+	friend istream& operator>>(istream& in, CartelaTransport& c) {
+		cout << "Introduceti numele posesorului: ";
+		in >> ws;
+		getline(in, c.numePosesor);
+		cout << "Introduceti numar zile utilizare: ";
+		in >> c.nrZileUtilizare;
+
+		cout << "Introduceti suma din portofel: ";
+		in >> c.sumaPortofel;
+
+		cout << "Introduceti numar calatorii: ";
+		in >> c.nrCalatorii;
+
+		if (c.valoriCalatorii != nullptr) {
+			delete[] c.valoriCalatorii;
+			c.valoriCalatorii = nullptr;
+		}
+
+		if (c.nrCalatorii > 0) {
+			c.valoriCalatorii = new float[c.nrCalatorii];
+			for (int i = 0; i < c.nrCalatorii; i++) {
+				cout << "Valoare calatorie " << i + 1 << ": ";
+				in >> c.valoriCalatorii[i];
+			}
+		}
+
+		return in;
+	}
+
+
+	friend ostream& operator<<(ostream& out, const CartelaTransport& c) {
+		out << "Seria cartelei: " << c.serieCartela << endl;
+		out << "Nume posesor: " << c.numePosesor << endl;
+		out << "Numar zile utilizare: " << c.nrZileUtilizare << endl;
+		out << "Suma in portofel: " << c.sumaPortofel << endl;
+		out << "Numar calatorii: " << c.nrCalatorii << endl;
+
+		if (c.valoriCalatorii != nullptr && c.nrCalatorii > 0) {
+			out << "Valori calatorii: ";
+			for (int i = 0; i < c.nrCalatorii - 1; i++) {
+				out << c.valoriCalatorii[i] << ", ";
+			}
+			out << c.valoriCalatorii[c.nrCalatorii - 1] << ".";
+		}
+		else {
+			out << "Valori calatorii: N/A";
+		}
+
+		return out;
+	}
+
+	CartelaTransport operator++() {   // prefix
+		this->nrZileUtilizare++;
+		return *this;
+	}
+
+	CartelaTransport operator++(int) { // postfix
+		CartelaTransport copie = *this; // copie veche
+		this->nrZileUtilizare++;
+		return copie;
+	}
+
+	bool operator!() const {
+		return this->sumaPortofel <= 0 || this->nrCalatorii == 0;
+	}
+
 };
 float CartelaTransport::valoareaMinCalatorie = 0;
 
@@ -179,7 +251,32 @@ void main() {
 	CartelaTransport cartela3;
 	cartela3 = cartela1;
 	cartela3.afisare();
+
+	cout << "=== Test operator>> ===" << endl;
+	CartelaTransport cartela4;
+	cin >> cartela4;
+	cout << "=== Test operator<< ===" << endl;
+	cout << cartela4 << endl;
+
+	cout << "=== Test operator++ prefix ===" << endl;
+	++cartela4;
+	cout << "Dupa ++cartela1:" << endl;
+	cout << cartela4 << endl;
+
+	cout << "=== Test operator++ postfix ===" << endl;
+	CartelaTransport copie = cartela4++;
+	cout << "Copia (inainte de incrementare):" << endl;
+	cout << copie << endl;
+	cout << "Originalul (dupa cartela1++):" << endl;
+	cout << cartela4 << endl;
+
+	cout << "=== Test operator! ===" << endl;
+	if (!cartela4) {
+		cout << "Cartela nu este utilizabila (fara bani sau fara calatorii)." << endl;
+	}
+	else {
+		cout << "Cartela este OK (are bani si calatorii)." << endl;
+	}
+
 	
-
-
 }
